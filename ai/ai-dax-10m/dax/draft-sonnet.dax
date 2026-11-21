@@ -1,0 +1,86 @@
+```dax
+DEFINE
+    MEASURE Sales[Sales LY] =
+        CALCULATE (
+            [Sales Amount],
+            SAMEPERIODLASTYEAR ( 'Date'[Date] )
+        )
+
+    MEASURE Sales[Sales YTD] =
+        CALCULATE (
+            [Sales Amount],
+            DATESYTD ( 'Date'[Date] )
+        )
+
+    MEASURE Sales[# New Customers] =
+        VAR FirstDateInPeriod = MIN ( 'Date'[Date] )
+        VAR LastDateInPeriod = MAX ( 'Date'[Date] )
+        RETURN
+            COUNTROWS (
+                FILTER (
+                    CALCULATETABLE (
+                        VALUES ( Sales[CustomerKey] ),
+                        REMOVEFILTERS ( 'Date' )
+                    ),
+                    VAR FirstPurchase =
+                        CALCULATE (
+                            MIN ( Sales[Order Date] ),
+                            REMOVEFILTERS ( 'Date' )
+                        )
+                    RETURN
+                        FirstPurchase >= FirstDateInPeriod
+                            && FirstPurchase <= LastDateInPeriod
+                            && NOT ISBLANK ( CALCULATE ( [Sales Amount] ) )
+                )
+            )
+
+    MEASURE Sales[Sales Growth %] =
+        VAR CurrentSales = [Sales Amount]
+        VAR PreviousSales = [Sales LY]
+        RETURN
+            DIVIDE ( CurrentSales - PreviousSales, PreviousSales )
+
+    MEASURE Sales[Avg Delivery Days] =
+        AVERAGEX (
+            VALUES ( Sales[Order Number] ),
+            CALCULATE (
+                AVERAGEX (
+                    Sales,
+                    DATEDIFF ( Sales[Order Date], Sales[Delivery Date], DAY )
+                )
+            )
+        )
+
+    MEASURE Sales[# Returning Customers] =
+        VAR FirstDateInPeriod = MIN ( 'Date'[Date] )
+        RETURN
+            COUNTROWS (
+                FILTER (
+                    VALUES ( Sales[CustomerKey] ),
+                    VAR PriorPurchases =
+                        CALCULATE (
+                            COUNTROWS ( Sales ),
+                            REMOVEFILTERS ( 'Date' ),
+                            Sales[Order Date] < FirstDateInPeriod
+                        )
+                    RETURN
+                        PriorPurchases > 0
+                )
+            )
+
+    MEASURE Sales[Category Share %] =
+        DIVIDE (
+            [Sales Amount],
+            CALCULATE ( [Sales Amount], REMOVEFILTERS ( Product[Category] ) )
+        )
+
+    MEASURE Sales[Sales 30D Avg] =
+        VAR LastDate = MAX ( 'Date'[Date] )
+        VAR Window =
+            DATESINPERIOD ( 'Date'[Date], LastDate, -30, DAY )
+        RETURN
+            DIVIDE (
+                CALCULATE ( [Sales Amount], Window ),
+                COUNTROWS ( Window )
+            )
+```

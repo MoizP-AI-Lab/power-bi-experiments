@@ -1,0 +1,52 @@
+{
+  "steps": [
+    {
+      "n": 1,
+      "step": "drafts",
+      "what": "Two fresh AI sessions (Claude Sonnet and Claude Haiku via Claude Code 2.1.314, print mode, no tools, empty folder) each wrote the 8 measures once from dax/prompt.md",
+      "why": "The drafter must not see the data or the tests, so the grader can't steer it",
+      "result": "dax/draft-sonnet.dax and dax/draft-haiku.dax, unedited, 2026-11-21T18:44:57Z",
+      "at": "2026-11-21T18:45:54Z"
+    },
+    {
+      "n": 2,
+      "step": "build",
+      "what": "Built the experiment model from the Contoso base with build_base.py on the 10M parquet set, opened in Power BI Desktop 2.159.1231.0",
+      "why": "Same model and measures as the base; only the data size changes",
+      "result": "",
+      "at": "2026-11-21T18:45:55Z"
+    },
+    {
+      "n": 3,
+      "step": "date-bug",
+      "what": "Base model dates were one day early (UTC parquet timestamps converted to local time). Fixed in build_base.py, rebuilt, re-refreshed",
+      "why": "Year 2024 summed 3,280,758,606.50 vs 3,283,485,913.06 by order date; every time-based check depended on it",
+      "result": "Date table 2016-01-01 to 2026-12-31; 1 Jan 2024 is Monday",
+      "at": "2026-11-21T19:04:24Z"
+    },
+    {
+      "n": 4,
+      "step": "correctness",
+      "what": "Ran expected values and three versions in 5 contexts (tests/)",
+      "why": "",
+      "result": "Sonnet 33/40, Haiku 33/40 as written (38/40 after renaming LastDate); reference 40/40. Both drafts: 57,466 new Audio customers in 2024 vs 3,292",
+      "at": "2026-11-21T19:04:24Z"
+    },
+    {
+      "n": 5,
+      "step": "speed",
+      "what": "# New Customers on Year x Category grid, cold cache, engine metrics",
+      "why": "",
+      "result": "Sonnet 254,378 ms 12 GB; Haiku 5,312 ms; reference 1,482 ms",
+      "at": "2026-11-21T19:04:24Z"
+    },
+    {
+      "n": 6,
+      "step": "same-query",
+      "what": "Spec measure returns 3,292 alone but 9,819 when the AI draft measure is in the same SUMMARIZECOLUMNS (either order)",
+      "why": "Found on the real Desktop page; reproduced 3 times in DAX",
+      "result": "Open: needs a minimal repro and a second Desktop build before any claim",
+      "at": "2026-11-21T19:18:27Z"
+    }
+  ]
+}

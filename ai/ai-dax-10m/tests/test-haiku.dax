@@ -1,0 +1,72 @@
+DEFINE
+	MEASURE Sales[Sales LY] =
+		CALCULATE ( [Sales Amount], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+	MEASURE Sales[Sales YTD] =
+		CALCULATE ( [Sales Amount], DATESYTD ( 'Date'[Date] ) )
+
+	MEASURE Sales[# New Customers] =
+		VAR PeriodStart = MIN ( 'Date'[Date] )
+		RETURN
+			COUNTROWS (
+				FILTER (
+					VALUES ( Sales[CustomerKey] ),
+					CALCULATE ( MIN ( Sales[Order Date] ), REMOVEFILTERS ( 'Date' ) ) >= PeriodStart
+				)
+			)
+
+	MEASURE Sales[Sales Growth %] =
+		VAR CurrentSales = [Sales Amount]
+		VAR LastYearSales = [Sales LY]
+		RETURN
+			DIVIDE ( CurrentSales - LastYearSales, LastYearSales ) // format the measure as a percentage
+
+	MEASURE Sales[Avg Delivery Days] =
+		AVERAGEX (
+			SUMMARIZE (
+				Sales,
+				Sales[Order Number],
+				"Days", DATEDIFF ( MIN ( Sales[Order Date] ), MAX ( Sales[Delivery Date] ), DAY )
+			),
+			[Days]
+		)
+
+	MEASURE Sales[# Returning Customers] =
+		VAR PeriodStart = MIN ( 'Date'[Date] )
+		RETURN
+			COUNTROWS (
+				FILTER (
+					VALUES ( Sales[CustomerKey] ),
+					CALCULATE (
+						COUNTROWS ( Sales ),
+						REMOVEFILTERS ( 'Date' ),
+						Sales[Order Date] < PeriodStart
+					) > 0
+				)
+			)
+
+	MEASURE Sales[Category Share %] =
+		DIVIDE (
+			[Sales Amount],
+			CALCULATE ( [Sales Amount], REMOVEFILTERS ( Product[Category] ) )
+		)
+
+	MEASURE Sales[Sales 30D Avg] =
+		VAR LastDate = MAX ( 'Date'[Date] )
+		RETURN
+			DIVIDE (
+				CALCULATE (
+					[Sales Amount],
+					REMOVEFILTERS ( 'Date' ),
+					DATESINPERIOD ( 'Date'[Date], LastDate, -30, DAY )
+				),
+				30
+			)
+EVALUATE
+UNION (
+CALCULATETABLE ( ROW ( "Context", "A 2024", "Sales LY", [Sales LY], "Sales YTD", [Sales YTD], "# New Customers", [# New Customers], "Sales Growth %", [Sales Growth %], "Avg Delivery Days", [Avg Delivery Days], "# Returning Customers", [# Returning Customers], "Category Share %", [Category Share %], "Sales 30D Avg", [Sales 30D Avg] ), 'Date'[Year] = 2024 ),
+CALCULATETABLE ( ROW ( "Context", "B 2024 Audio", "Sales LY", [Sales LY], "Sales YTD", [Sales YTD], "# New Customers", [# New Customers], "Sales Growth %", [Sales Growth %], "Avg Delivery Days", [Avg Delivery Days], "# Returning Customers", [# Returning Customers], "Category Share %", [Category Share %], "Sales 30D Avg", [Sales 30D Avg] ), 'Date'[Year] = 2024, Product[Category] = "Audio" ),
+CALCULATETABLE ( ROW ( "Context", "C Mar 2024", "Sales LY", [Sales LY], "Sales YTD", [Sales YTD], "# New Customers", [# New Customers], "Sales Growth %", [Sales Growth %], "Avg Delivery Days", [Avg Delivery Days], "# Returning Customers", [# Returning Customers], "Category Share %", [Category Share %], "Sales 30D Avg", [Sales 30D Avg] ), 'Date'[Year Month] = "March 2024" ),
+CALCULATETABLE ( ROW ( "Context", "D 2024 Germany", "Sales LY", [Sales LY], "Sales YTD", [Sales YTD], "# New Customers", [# New Customers], "Sales Growth %", [Sales Growth %], "Avg Delivery Days", [Avg Delivery Days], "# Returning Customers", [# Returning Customers], "Category Share %", [Category Share %], "Sales 30D Avg", [Sales 30D Avg] ), 'Date'[Year] = 2024, Customer[Country] = "Germany" ),
+CALCULATETABLE ( ROW ( "Context", "E 2017", "Sales LY", [Sales LY], "Sales YTD", [Sales YTD], "# New Customers", [# New Customers], "Sales Growth %", [Sales Growth %], "Avg Delivery Days", [Avg Delivery Days], "# Returning Customers", [# Returning Customers], "Category Share %", [Category Share %], "Sales 30D Avg", [Sales 30D Avg] ), 'Date'[Year] = 2017 )
+)
