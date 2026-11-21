@@ -55,6 +55,26 @@ Each measure in its own query, Year = 2024, as shown on the Power BI Desktop pag
 
 The written-to-spec values match the row-level check (GROUPBY over all sales lines) for every category tested.
 
+### New customers by year, no category filter (the lower table in the post image)
+
+Both measures and the row-level check (each customer's first-ever order date, from GROUPBY over all sales lines),
+checked on 2026-11-21 for every year:
+
+| Year | AI draft (Haiku) | Written to spec | From the rows |
+|---|---|---|---|
+| 2025 | 16,873 | 16,873 | 16,873 |
+| 2024 | 25,552 | 25,552 | 25,552 |
+| 2023 | 57,647 | 57,647 | 57,647 |
+| 2022 | 58,642 | 58,642 | 58,642 |
+| 2021 | 67,231 | 67,231 | 67,231 |
+| 2020 | 102,807 | 102,807 | 102,807 |
+| 2019 | 259,971 | 259,971 | 259,971 |
+| 2018 | 249,825 | 249,825 | 249,825 |
+| 2017 | 286,350 | 286,350 | 286,350 |
+| 2016 | 221,406 | 221,406 | 221,406 |
+
+Without a category filter, both measures agree with the rows in every year from 2016 to 2025.
+
 ## Speed: # New Customers on the 80-cell grid
 
 Cold cache (ClearCache before the run), server duration and peak memory from the engine's execution metrics:
@@ -82,7 +102,8 @@ the cell and finds each first purchase with ALLEXCEPT on the customer key; 87% o
 
 The first build of the base model read the parquet dates as UTC timestamps and converted them to the PC's local time
 (US Central), so every date landed one day early: the Date table ran from 2015-12-31 to 2026-12-30 while its Year
-column said 2016 to 2026. Year 2024 then summed 3,280,758,606.50 against 3,283,485,913.06 for orders dated in 2024.
+column said 2016 to 2026. Before the fix, Year = 2024 on the Date table summed 3,280,758,606.50 while the shifted order
+dates in 2024 summed 3,283,485,913.06. After the fix both give 3,280,758,606.50, the correct 2024 total.
 Fixed in the model's Power Query by dropping the zone before the date conversion. All results above are from
 the fixed model.
 
