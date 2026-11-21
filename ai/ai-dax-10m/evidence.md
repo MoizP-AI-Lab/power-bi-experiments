@@ -38,6 +38,23 @@ compared with a measure written to the spec?
   are the 8 cells of 2016, the first year, when every customer is new.
 - Without a category filter (2024, March 2024, Germany, 2017) every draft measure that compiles returns the expected value.
 
+### New customers in 2024 by category (the report page and the post image)
+
+Each measure in its own query, Year = 2024, as shown on the Power BI Desktop page (`media/ai-vs-spec-desktop.webp`):
+
+| Category | AI draft (Haiku) | Written to spec |
+|---|---|---|
+| TV and Video | 91,675 | 4,776 |
+| Home Appliances | 90,257 | 5,423 |
+| Music, Movies and Audio Books | 86,420 | 10,373 |
+| Games and Toys | 84,334 | 6,084 |
+| Cell phones | 80,734 | 13,416 |
+| Computers | 63,694 | 12,886 |
+| Cameras and camcorders | 61,735 | 3,086 |
+| Audio | 57,466 | 3,292 |
+
+The written-to-spec values match the row-level check (GROUPBY over all sales lines) for every category tested.
+
 ## Speed: # New Customers on the 80-cell grid
 
 Cold cache (ClearCache before the run), server duration and peak memory from the engine's execution metrics:
