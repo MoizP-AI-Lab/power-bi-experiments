@@ -1,0 +1,20 @@
+{
+  "testedAt": "2026-11-21",
+  "desktopVersion": "2.159.1231.0",
+  "size": "10M",
+  "data": {"salesLines": 23719935, "orders": 9887613, "customers": 1346304, "firstOrder": "2016-05-18", "lastOrder": "2025-12-31"},
+  "drafters": {"sonnet": "Claude Sonnet via Claude Code 2.1.314 print mode, no tools, empty folder", "haiku": "Claude Haiku, same setup", "prompt": "dax/prompt.md", "draftedAt": "2026-11-21T18:44:57Z"},
+  "results": {
+    "checksPerVersion": 40,
+    "correctAsWritten": {"sonnet": 33, "haiku": 33, "reference": 40},
+    "correctAfterOneRename": {"sonnet": 38, "haiku": 38},
+    "compileErrors": {"sonnet": 1, "haiku": 1, "cause": "both drafts name a variable LastDate in Sales 30D Avg; LASTDATE is a DAX function, so the measure does not compile"},
+    "newCustomers2024Audio": {"drafts": 57466, "true": 3292},
+    "returningCustomers2024Audio": {"drafts": 98489, "true": 152663},
+    "newCustomersGrid": {"cells": 80, "cellsWrongHaikuDraft": 72, "examples": {"2024 Computers": {"draft": 63694, "true": 12886}, "2025 TV and Video": {"draft": 49662, "true": 1994}}, "correctCells": "all 8 cells of 2016, the first year"},
+    "newCustomersGridColdMs": {"sonnet": 254378, "haiku": 5312, "reference": 1482},
+    "newCustomersGridPeakMemoryMB": {"sonnet": 12334, "haiku": 1440, "reference": 379},
+    "repeatRunsClientMs": {"haiku": {"cold": 5237, "warm": 2183}, "reference": {"cold": 786, "warm": 1377}}
+  },
+  "method": "Expected values computed from the rows with GROUPBY and plain date filters, no time intelligence (tests/expected.dax). Each version run as query-scoped measures in 5 contexts (tests/). Timing: SUMMARIZECOLUMNS Year x Category (80 cells), ClearCache before cold runs, server duration and peak memory from the engine's execution metrics. Sonnet's grid ran once (4.2 minutes, 12 GB) and was not repeated."
+}
