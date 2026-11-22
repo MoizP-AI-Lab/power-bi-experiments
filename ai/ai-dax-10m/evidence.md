@@ -40,18 +40,22 @@ compared with a measure written to the spec?
 
 ### New customers in 2024 by category (the report page and the post image)
 
-Each measure in its own query, Year = 2024, as shown on the Power BI Desktop page (`media/ai-vs-spec-desktop.webp`):
+Each measure in its own query and its own table visual, Year = 2024, both tables sorted by category A to Z. Screenshot
+of the Power BI Desktop page used in the post image (recaptured 2026-11-22 after sorting both tables A to Z; numbers
+re-run by DAX the same day, unchanged): `media/ai-vs-spec-two.webp`. Full page: `media/ai-vs-spec-desktop.webp`.
+
+![New customers in 2024 by category, AI draft and written to spec, Power BI Desktop](media/ai-vs-spec-two.webp)
 
 | Category | AI draft (Haiku) | Written to spec |
 |---|---|---|
-| TV and Video | 91,675 | 4,776 |
-| Home Appliances | 90,257 | 5,423 |
-| Music, Movies and Audio Books | 86,420 | 10,373 |
-| Games and Toys | 84,334 | 6,084 |
+| Audio | 57,466 | 3,292 |
+| Cameras and camcorders | 61,735 | 3,086 |
 | Cell phones | 80,734 | 13,416 |
 | Computers | 63,694 | 12,886 |
-| Cameras and camcorders | 61,735 | 3,086 |
-| Audio | 57,466 | 3,292 |
+| Games and Toys | 84,334 | 6,084 |
+| Home Appliances | 90,257 | 5,423 |
+| Music, Movies and Audio Books | 86,420 | 10,373 |
+| TV and Video | 91,675 | 4,776 |
 
 The written-to-spec values match the row-level check (GROUPBY over all sales lines) for every category tested.
 
@@ -59,6 +63,10 @@ The written-to-spec values match the row-level check (GROUPBY over all sales lin
 
 Both measures and the row-level check (each customer's first-ever order date, from GROUPBY over all sales lines),
 checked on 2026-11-21 for every year:
+
+Screenshot of this table on the same Power BI Desktop page, used in the post image: `media/ai-vs-spec-year.webp`.
+
+![New customers by year, no category filter, both measures, Power BI Desktop](media/ai-vs-spec-year.webp)
 
 | Year | AI draft (Haiku) | Written to spec | From the rows |
 |---|---|---|---|
@@ -104,7 +112,7 @@ The first build of the base model read the parquet dates as UTC timestamps and c
 (US Central), so every date landed one day early: the Date table ran from 2015-12-31 to 2026-12-30 while its Year
 column said 2016 to 2026. Before the fix, Year = 2024 on the Date table summed 3,280,758,606.50 while the shifted order
 dates in 2024 summed 3,283,485,913.06. After the fix both give 3,280,758,606.50, the correct 2024 total.
-Fixed in the model's Power Query by dropping the zone before the date conversion. All results above are from
+Fixed in `shared/contoso/build_base.py` by dropping the zone before the date conversion. All results above are from
 the fixed model.
 
 ## Sources
